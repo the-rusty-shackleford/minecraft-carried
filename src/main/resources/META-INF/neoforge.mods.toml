@@ -1,0 +1,27 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="AGPL-3.0-or-later"
+
+[[mods]]
+modId="carried"
+version="${version}"
+displayName="Carried"
+authors="Rusty Shackleford and nfx"
+description='''One answer to "what does this player carry?": the inventory and every store another mod lets a player carry, such as a worn backpack. Mods that count, take or give a player's items ask Carried; mods that add carried storage register with it once. Consumers nest this jar inside their own.'''
+
+[[mixins]]
+config="carried.mixins.json"
+
+[[dependencies.carried]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.248,21.2)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.carried]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1]"
+ordering="NONE"
+side="BOTH"

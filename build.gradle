@@ -1,0 +1,88 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.144'
+}
+version = mod_version
+group = 'com.chunkworks.carried'
+base { archivesName = 'carried' }
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+repositories { mavenCentral() }
+
+// domain: the planning rules, JDK-only, tested by plain JUnit. main: the protocol and the hooks.
+// gametest: a separate development mod (carried_gametest) with a fake store provider and test
+// items, never in the shipped jar.
+sourceSets { domain; gametest }
+def gameTestLog = file('run/logs/latest.log')
+def configDirectory = file('run/config')
+var resetWorld = tasks.register('resetGameTestWorld', Delete) { delete 'run/world' }
+var structures = tasks.register('copyGameTestStructures', Copy) {
+    from 'devtools/gameteststructures'
+    into 'run/gameteststructures'
+}
+var verification = tasks.register('prepareVerification') {
+    doLast {
+        configDirectory.mkdirs()
+        new File(configDirectory, 'fml.toml').text = 'disableConfigWatcher=true\nearlyWindowControl=false\n'
+    }
+}
+neoForge {
+    version = project.neo_version
+    parchment { minecraftVersion = '1.21.1'; mappingsVersion = '2024.11.17' }
+    runs {
+        client { client() }
+        server { server(); programArgument '--nogui' }
+        gameTestServer {
+            type = 'gameTestServer'
+            sourceSet = sourceSets.gametest
+            systemProperty 'neoforge.enabledGameTestNamespaces', 'carried'
+            taskBefore structures
+            taskBefore resetWorld
+            taskBefore verification
+        }
+        configureEach { logLevel = org.slf4j.event.Level.INFO }
+    }
+    mods {
+        carried { sourceSet(sourceSets.domain); sourceSet(sourceSets.main) }
+        carried_gametest { sourceSet(sourceSets.gametest) }
+    }
+    addModdingDependenciesTo(sourceSets.gametest)
+}
+neoForge.runs.matching { it.name != 'gameTestServer' }.configureEach {
+    loadedMods = neoForge.mods.matching { it.name != 'carried_gametest' }
+}
+dependencies {
+    implementation sourceSets.domain.output
+    gametestImplementation sourceSets.main.output
+    gametestImplementation sourceSets.domain.output
+    testImplementation sourceSets.domain.output
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.9.2'
+}
+tasks.named('test', Test) { useJUnitPlatform() }
+// The shipped jar is main + domain.
+jar { from sourceSets.domain.output }
+// Consumers compile against this artifact and nest it (jarJar), from mavenLocal:
+// `./gradlew publishToMavenLocal`, the way Ranged Weapons is shared.
+publishing {
+    publications { mavenJava(MavenPublication) { from components.java } }
+}
+def releaseVersion = version.toString()
+tasks.named('processResources') {
+    inputs.property 'version', releaseVersion
+    filesMatching('META-INF/neoforge.mods.toml') { expand version: releaseVersion }
+}
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+// The server's exit code is also zero when no test ran; the framework's own summary line is the
+// assertion.
+tasks.named('runGameTestServer') { task ->
+    doLast {
+        def log = gameTestLog.text
+        def passed = log =~ /All (\d+) required tests passed/
+        if (!passed.find() || log.contains('Mod loading has failed')) throw new GradleException('GameTests failed; see run/logs/latest.log')
+        task.logger.lifecycle('GameTests: ' + passed.group(1) + ' passed')
+    }
+}
+tasks.named('check') {
+    if (!project.hasProperty('skipGameTests')) dependsOn 'runGameTestServer'
+}

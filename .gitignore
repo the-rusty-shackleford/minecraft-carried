@@ -1,0 +1,10 @@
+.gradle/
+build/
+run/
+.idea/
+.vscode/
+*.iml
+graphify-out/
+__pycache__/
+.mypy_cache/
+.ruff_cache/

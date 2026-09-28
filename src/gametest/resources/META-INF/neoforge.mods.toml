@@ -1,0 +1,14 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="AGPL-3.0-or-later"
+[[mods]]
+modId="carried_gametest"
+version="1.0.0"
+displayName="Carried development tests"
+description='''Real-game tests with a fake store provider, excluded from the release artifact.'''
+[[dependencies.carried_gametest]]
+modId="carried"
+type="required"
+versionRange="[1.0,)"
+ordering="AFTER"
+side="BOTH"

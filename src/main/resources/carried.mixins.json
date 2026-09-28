@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.chunkworks.carried.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+    "AbstractArrowMixin",
+    "InventoryMixin",
+    "ItemEntityMixin",
+    "MerchantMenuMixin",
+    "ProjectileWeaponItemMixin",
+    "ServerPlaceRecipeMixin"
+  ]
+}
