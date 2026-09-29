@@ -33,5 +33,5 @@ replaces its contents as one change. Backpacks+ (`BagStores`, `BagStore`) is the
 
 ## Status
 
-1.0.0, built and tested 2026-09-28, unreleased. `knowledge/decisions/` has the rules and why;
+1.0.0, released 2026-09-29, nested in Backpacks+ 0.6.0 and its consumers. `knowledge/decisions/` has the rules and why;
 `knowledge/design/audit.md` the survey they rest on.

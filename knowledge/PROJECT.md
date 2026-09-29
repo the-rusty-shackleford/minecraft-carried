@@ -1,9 +1,11 @@
 # Carried
 
-Version 1.0.0, built 2026-09-28, **unreleased**: ships nested in Backpacks+ 0.6.0 and in each
-migrated consumer as one pack, on Rusty's go. Minecraft 1.21.1, NeoForge 21.1.248, Java 21, both
-sides. Mod id `carried`, `com.chunkworks.carried`, AGPL-3.0-or-later, by Rusty Shackleford and nfx.
-No remote yet.
+Version 1.0.0, **released 2026-09-29 and deployed in pack 1.68.0**, nested in Backpacks+ 0.6.0 and
+in each migrated consumer, never a pack entry (the server loaded one copy, sha1 `46850745`).
+Minecraft 1.21.1, NeoForge 21.1.248, Java 21, both sides. Mod id `carried`,
+`com.chunkworks.carried`, AGPL-3.0-or-later, by Rusty Shackleford and nfx. Public at
+`github.com/the-rusty-shackleford/minecraft-carried`; the deployment is the server repo's
+`knowledge/releases/pack-1.68.0.md`. Not yet seen in play.
 
 Rusty, 2026-09-28, after Village Deed could not see the emeralds in his bag: one modification that
 makes everything that sees the inventory see the backpack. D-0001 is the protocol, D-0002 to D-0005
